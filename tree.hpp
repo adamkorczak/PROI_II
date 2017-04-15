@@ -85,6 +85,7 @@ bTree<typ> &bTree<typ>::operator=(const bTree<typ> &t)
 	root = NULL;
 	else
 	{
+		root = NULL;
 		minDeg = t.minDeg;
 		copyRoot(t.root);
 	}
@@ -118,6 +119,7 @@ int j;
 			if(root == NULL)
 			{
 				root = new treeNode<typ>(b->minDegree,b->leaf,b->index);
+				std::cout <<"wstawiam wartosc currDeg " << b->currDeg<<std::endl;
 				root->currDeg = b->currDeg;
 				for(i = 0; i < b->currDeg; i++)
 				root->keys[i] = b->keys[i];
@@ -131,6 +133,7 @@ int j;
 				{				
 					treeNode<typ> *p = new treeNode<typ>(b->minDegree,true,b->index);
 					root->child[j] = p;
+					
 					p->copy(b->child[j]);
 				}
 				
@@ -144,6 +147,7 @@ void treeNode<typ>::copy(treeNode<typ> *b)
 {
 int i;
 int j;
+		
 		
 		currDeg = b->currDeg;
 
@@ -173,23 +177,16 @@ template <class typ>
 void bTree<typ>::traverseInsert(bTree<typ> &t, treeNode<typ> *s)
 {
 	
-int i;
-	
+	int i;
+
 	for(i= 0; i < s->currDeg; i++)
 	{
-		t.insert(s->data[i],s->keys[i]);
-		
-	std::cout<< s->keys[i]<<std::endl;
-	}
-
-	for(i = 0; i <s->currDeg; i++)
-	{
-	
 		if(s->leaf == false)
 		{
-			traverseInsert(t,s->child[i]);;
+			traverseInsert(t,s->child[i]);
 		}
-	}	
+		t.insert(s->data[i],s->keys[i]);	
+	}
 
 
 	if(s->leaf == false)
