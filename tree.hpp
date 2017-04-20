@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <queue>
 
 
 #ifndef display_hpp
@@ -14,7 +15,7 @@
 template <class typ>
 class treeNode
 {
-public:
+private:
 
 	typ *keys;
 	int minDegree;
@@ -26,7 +27,7 @@ public:
 	treeNode **child;
 
 	typ *data;
-
+public:
 
 
 	treeNode(int _d = 1, bool _leaf = true, int _index = 1)
@@ -35,28 +36,38 @@ public:
 			data = new typ [2*_d - 1];
 			child = new treeNode *[2*_d]; 
 			currDeg = 0;
-		//std::cout <<"konstruktor" << std::endl;
 		}
 	
 
 	treeNode *search(typ _k);
+	treeNode *traverseToEnd();
 	void traverse();
 	void traverseCopy();
 	void copy(treeNode<typ> *b);
 	void insertInEmptySlots(typ _data, typ _k);
 	void split(int m, treeNode<typ> *ptr);
+	void checkSize(int tabSize[]);
+	void compareTree(treeNode<typ> &t, bool *pointer);
 
+
+template <class T> friend class bTree;
+template <class T> friend class  bTreePrinter;
+template <class T> friend class bIterator;
 };
 
 
 template <class typ>
 class bTree
-	:	public treeNode<typ>
 {
+	int noCells;
+	int noNodes;
 public:
+
+template <class T> friend class bIterator;
 	treeNode<typ> *root;
 	int minDeg;
 
+	//typedef bIterator<typ> bIt;
 
 
 	bTree(int _minDeg = 1)
@@ -65,14 +76,255 @@ public:
 
 	void traverse();
 	void traverseInsert(bTree<typ> &t, treeNode<typ> *s);
-	bTree<typ> &operator=(const bTree<typ> &t);
 	void copyRoot(treeNode<typ> *b);
+	void insert(typ _data, typ _k);
+	void checkSize();
+	
 	treeNode<typ>* getNodeThruTraverse(); 
 	treeNode<typ>* search(typ _k);
-	void insert(typ _data, typ _k);
-	bTree operator+(const bTree<typ> &t);
-		
+	treeNode<typ>* returnEnd();
+	treeNode<typ>* returnNext();
+
+	bool operator==(const bTree<typ> &t);
+	bool operator!=(const bTree<typ> &t);
+	
+	bTree<typ> operator+(const bTree<typ> &t);
+	bTree<typ> &operator=(const bTree<typ> &t);	
 };
+
+template <class typ>
+class bIterator
+{
+	treeNode<typ> *currPtr;
+	int index;
+	int noNodes;
+
+public:
+
+	bTree<typ> &it;
+	std::queue < treeNode<typ>* > Q;
+	
+	bIterator(bTree<typ> &t) : it(t)
+	{ currPtr = it.root; index = 0; noNodes = it.noNodes; Q.push(it.root);}
+
+	bIterator & end()
+	{
+		currPtr = it.returnEnd();
+		return *this;	
+	}
+
+	bIterator & begin()
+	{
+		currPtr = it.root;
+		return *this;
+	}
+
+	bIterator<typ> &operator++();
+	bIterator<typ> operator++(int);
+
+};
+
+
+
+template <class typ>
+bIterator<typ> &bIterator<typ>::operator++()
+{
+int i;
+	if(currPtr == NULL && currPtr->leaf == true)
+	return *this;
+	else
+	{
+		for(i = 0; i < it.root->currDeg; i++)
+		Q.push(it.root->child[i]);
+	}
+	//currPtr = it.returnNext();
+	
+
+}
+
+
+template <class typ>
+treeNode<typ> *bTree<typ>::returnNext()
+{
+
+}
+
+
+template <class typ>
+treeNode<typ> *bTree<typ>::returnEnd()
+{
+treeNode<typ> *s;
+
+	if(root == NULL || root->leaf == true)
+	return this->root;
+	else
+	{
+		s = root->treeNode<typ>::traverseToEnd();
+		return s;	
+	}
+}
+
+
+template <class typ>
+treeNode<typ>* treeNode<typ>::traverseToEnd()
+{
+	int i;
+	for(i= 0; i < currDeg; i++)
+	{
+		if(leaf == false)
+		{
+			child[i] ->traverseToEnd();
+		}
+		else if(leaf == true && i == (currDeg - 1))
+		{
+			return this;
+		}	
+	}
+
+	if(leaf == false)
+	{
+		child[i] -> traverseToEnd();
+	}
+}
+
+template <class typ>
+void treeNode<typ>::compareTree(treeNode<typ> &t, bool *pointer)
+{
+int i;
+
+	if(currDeg == t.currDeg)
+	{
+		for(i = 0; i < currDeg; i++)
+		{
+			if(keys[i] != t.keys[i])
+			{
+				*pointer = false;
+				return;
+			}
+		}
+
+	}
+	else
+	{
+		*pointer = false;
+		return;
+	}
+
+	if(leaf == false&& t.leaf == false)
+	{
+	for( i = 0; i < currDeg; i++)
+	child[i]->compareTree(*(t.child[i]), pointer);
+	}
+	else if(leaf == true && t.leaf == true)
+	{
+		*pointer = true;
+		return;
+	}
+	else
+	{
+		*pointer = false;
+	}
+}
+
+
+template <class typ>
+bool bTree<typ>::operator!=(const bTree<typ> &t)
+{
+	if(*this == t)
+	return false;
+	else
+	return true;
+}
+
+
+template <class typ>
+bool bTree<typ>::operator==(const bTree<typ> &t)
+{
+bool *ptr = new bool;
+	bTree<typ> *temp = new bTree<typ>(t);
+	treeNode<typ> *s = temp->root;
+
+	this->checkSize();
+	temp->checkSize();
+
+	if(this->root == NULL && s == NULL)
+	return true;
+	
+	if(this->noCells != temp ->noCells || this->noNodes != temp->noNodes)
+	{
+		delete temp;
+		delete ptr;
+		return false;
+	}
+	else
+	{
+//traverse thru all cells
+		(this->root)->compareTree(*s,ptr);
+		delete temp;
+
+		if(*ptr)
+		{
+			delete ptr;
+			return true;
+		}
+		else
+		{
+			delete ptr;
+			return false;
+		}
+		
+	} 
+
+}
+
+
+template<class typ>
+void treeNode<typ>::checkSize(int tabSize[])
+{
+int i;
+tabSize[0]++;
+tabSize[1] = tabSize[1] + (currDeg);
+
+	if(leaf == false)
+	{
+		for( i = 0; i <= currDeg; i++)
+		child[i] -> checkSize(tabSize);
+	}
+
+}
+
+
+template <class typ>
+void bTree<typ>::checkSize()
+{
+int tabSize[2];
+tabSize[0] = 0;
+tabSize[1] = 0;
+//traverse thru Tree
+//size defined as number of nodes and cells
+
+//size ++
+	if(root == NULL)
+	{
+		noNodes = 0;
+		return;
+	}
+
+	if(root->leaf == true)
+	{
+		noNodes = 1;
+		noCells = (root->currDeg + 1);
+	}
+	else
+	{		
+		root->treeNode<typ>::checkSize(tabSize);	
+	}
+//std::cout << "currDeg" << root->currDeg<< std::endl;
+	noNodes = tabSize[0];
+	noCells = tabSize[1];
+	return;
+}
+
 
 
 template<class typ>
@@ -119,7 +371,6 @@ int j;
 			if(root == NULL)
 			{
 				root = new treeNode<typ>(b->minDegree,b->leaf,b->index);
-				std::cout <<"wstawiam wartosc currDeg " << b->currDeg<<std::endl;
 				root->currDeg = b->currDeg;
 				for(i = 0; i < b->currDeg; i++)
 				root->keys[i] = b->keys[i];
@@ -188,29 +439,26 @@ void bTree<typ>::traverseInsert(bTree<typ> &t, treeNode<typ> *s)
 		t.insert(s->data[i],s->keys[i]);	
 	}
 
-
 	if(s->leaf == false)
 	{
 		traverseInsert(t,s->child[i]);
 	}
-	
+
 }
-
-
 
 template <class typ>
 bTree<typ> bTree<typ>::operator+(const bTree<typ> &t)
 {
-
 bTree<typ> *temp = new bTree<typ>(t);
 
 	if(t.root != NULL)
-
-	temp->traverseInsert(*this,temp->root);
+	temp->traverseInsert(*this,t.root);
 
 	delete temp;
-	return  *this;
+	return *this;
+
 }
+
 
 template <class typ>
 void bTree<typ>::insert(typ _data, typ _k)

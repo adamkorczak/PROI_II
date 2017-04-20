@@ -17,23 +17,24 @@ srand(time(NULL));
 
 bTree<int> A(3),B(3);
 bTree<int> C;
+bIterator<int> I(A);
+
 bTreePrinter<int> printer;
 int a;
 bool run = false;
 char in;
+int sizeTree[2];
 
 
 
 	while(!run)
 	{
-		
-
 		std::cin >> in;
 		
 		switch(in)
 		{
 			case 'b':
-			for(a = 0; a < 6; a++)
+			for(a = 0; a < 10; a++)
 			{
 				B.insert(rand()%100,rand()%100);
 		
@@ -43,7 +44,7 @@ char in;
 			break;
 
 			case 'a':
-			for(a = 0; a < 6; a++)
+			for(a = 0; a < 50; a++)
 			{
 				A.insert(rand()%100,rand()%100);
 		
@@ -82,14 +83,38 @@ char in;
 	//C = A;
 //printer.print(C);
 	C = B;
-printer.print(C);
+	
+//printer.print(C);
+//std::cout << "test" << std::endl;
 
-
-	C = (A + B);
+	//C = (A + B);
 std::cout<<"operator kopiowania done" <<std::endl;
-	printer.print(C);
+	//printer.print(C);
 	C = A;
-	printer.print(C);
+	std::cout << C.root << std::endl;
+	//printer.print(C);
+	
+	if(A == B)
+	std::cout << "Drzewa przystaja do siebie" << std::endl;
+	else
+	std::cout << "Drzewa nie przystają do siebie" << std::endl;
+
+	if(A == C)
+	std::cout << "Drzewa przystaja do siebie" << std::endl;
+	else
+	std::cout << "Drzewa nie przystają do siebie" << std::endl;
+
+	I.begin();
+
+	/*A.checkSize(sizeTree);
+	std::cout << "No. of nodes: " << sizeTree[0] << "\t" << "No. of cells: " << sizeTree[1] <<std::endl;
+
+	B.checkSize(sizeTree);
+	std::cout << "No. of nodes: " << sizeTree[0] << "\t" << "No. of cells: " << sizeTree[1] <<std::endl;
+
+	C.checkSize(sizeTree);
+	std::cout << "No. of nodes: " << sizeTree[0] << "\t" << "No. of cells: " << sizeTree[1] <<std::endl;
+*/
 //bTree<int> *D = new bTree<int> (B);
 //std::cout<<"operator kopiowania done" <<std::endl;
 	/*printer.print(A+C);
