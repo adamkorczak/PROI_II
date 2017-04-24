@@ -15,7 +15,7 @@
 template <class typ>
 class treeNode
 {
-private:
+public:
 
 	typ *keys;
 	int minDegree;
@@ -27,7 +27,7 @@ private:
 	treeNode **child;
 
 	typ *data;
-public:
+
 
 
 	treeNode(int _d = 1, bool _leaf = true, int _index = 1)
@@ -37,7 +37,8 @@ public:
 			child = new treeNode *[2*_d]; 
 			currDeg = 0;
 		}
-	
+
+	treeNode(const treeNode<typ> &t);
 
 	treeNode *search(typ _k);
 	treeNode *traverseToEnd();
@@ -79,11 +80,10 @@ template <class T> friend class bIterator;
 	void copyRoot(treeNode<typ> *b);
 	void insert(typ _data, typ _k);
 	void checkSize();
-	
+
 	treeNode<typ>* getNodeThruTraverse(); 
 	treeNode<typ>* search(typ _k);
-	treeNode<typ>* returnEnd();
-	treeNode<typ>* returnNext();
+	treeNode<typ>* returnEnd();	
 
 	bool operator==(const bTree<typ> &t);
 	bool operator!=(const bTree<typ> &t);
@@ -95,57 +95,73 @@ template <class T> friend class bIterator;
 template <class typ>
 class bIterator
 {
-	treeNode<typ> *currPtr;
-	int index;
-	int noNodes;
-
 public:
-
+	treeNode<typ> *currPtr;
 	bTree<typ> &it;
 	std::queue < treeNode<typ>* > Q;
 	
+
+	
 	bIterator(bTree<typ> &t) : it(t)
-	{ currPtr = it.root; index = 0; noNodes = it.noNodes; Q.push(it.root);}
+	{ currPtr = it.root; Q.push(it.root); }
 
 	bIterator & end()
-	{
-		currPtr = it.returnEnd();
+	{	
+		currPtr = NULL;
 		return *this;	
 	}
-
+	bIterator & back()
+	{
+		currPtr = it.returnEnd();		
+		return *this;	
+	}
 	bIterator & begin()
 	{
 		currPtr = it.root;
 		return *this;
 	}
 
-	bIterator<typ> &operator++();
-	bIterator<typ> operator++(int);
+	void returnQLevel();
+
+	bIterator<typ> &operator++();	
+	bIterator<typ> operator++(int)
+	{
+		bIterator old = *this;
+		++(*this);
+		return old;
+	}
+
+	bool operator!=(const bIterator &R)
+	{
+		if(this->currPtr != R.currPtr)
+		return true;
+		else
+		return false;
+	}
 
 };
-
-
 
 template <class typ>
 bIterator<typ> &bIterator<typ>::operator++()
 {
 int i;
-	if(currPtr == NULL && currPtr->leaf == true)
-	return *this;
-	else
-	{
-		for(i = 0; i < it.root->currDeg; i++)
-		Q.push(it.root->child[i]);
-	}
-	//currPtr = it.returnNext();
-	
+		if(currPtr->leaf == false)
+		{
+			for(i = 0; i <= currPtr->currDeg; i++)
+			Q.push(currPtr->child[i]);
 
-}
-
-
-template <class typ>
-treeNode<typ> *bTree<typ>::returnNext()
-{
+			currPtr = NULL;
+			Q.pop();
+			currPtr = Q.front();
+			return *this;
+		}
+		else
+		{
+			currPtr = NULL;
+			Q.pop();
+			currPtr = Q.front();
+			return *this;
+		}
 
 }
 
@@ -186,6 +202,10 @@ treeNode<typ>* treeNode<typ>::traverseToEnd()
 		child[i] -> traverseToEnd();
 	}
 }
+
+
+
+
 
 template <class typ>
 void treeNode<typ>::compareTree(treeNode<typ> &t, bool *pointer)
@@ -342,6 +362,28 @@ bTree<typ> &bTree<typ>::operator=(const bTree<typ> &t)
 		copyRoot(t.root);
 	}
 	return *this;
+}
+
+
+template <class typ>
+treeNode<typ>::treeNode(const treeNode<typ> &t)
+{
+int i;
+	minDegree = t.minDegree;
+	leaf = t.leaf;
+	index = t.index;
+	currDeg = t.currDeg;
+	keys = new typ [2*minDegree - 1];
+	data = new typ [2*minDegree - 1];
+	child = new treeNode *[2*minDegree];
+	for(i = 0; i < currDeg; i++)
+	{
+		keys[i] = t.keys[i];
+		data[i] = t.data[i];
+		child[i] = t.child[i];
+	} 
+	child[i] = t.child[i];
+
 }
 
 

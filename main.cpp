@@ -44,9 +44,9 @@ int sizeTree[2];
 			break;
 
 			case 'a':
-			for(a = 0; a < 50; a++)
+			for(a = 0; a < 25; a++)
 			{
-				A.insert(rand()%100,rand()%100);
+				A.insert(a,a);
 		
 			}
 			std::cout << "Drzewo A" << std::endl;
@@ -104,7 +104,11 @@ std::cout<<"operator kopiowania done" <<std::endl;
 	else
 	std::cout << "Drzewa nie przystają do siebie" << std::endl;
 
-	I.begin();
+	for(bIterator<int> i = I.begin(); i != I.end(); i++)
+	std::cout <<"print " << i.currPtr->keys[0] << std::endl; 
+
+
+	
 
 	/*A.checkSize(sizeTree);
 	std::cout << "No. of nodes: " << sizeTree[0] << "\t" << "No. of cells: " << sizeTree[1] <<std::endl;
