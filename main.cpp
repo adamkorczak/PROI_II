@@ -20,11 +20,10 @@ bTree<int> C;
 bIterator<int> I(A);
 
 bTreePrinter<int> printer;
-int a;
+int a,b;
 bool run = false;
 char in;
 int sizeTree[2];
-
 
 
 	while(!run)
@@ -54,9 +53,13 @@ int sizeTree[2];
 			break;
 
 			case 'c':
-			std::cin >> a;
-			C.insert(a,a);
-			printer.print(C);
+			//for(bIterator<int> i = I.begin(); i != I.end(); i++)
+			I.begin();
+			for(a = 0; a < I.noNode(); a++){
+			for(b = 0; b < I.currDe(); b++)
+			std::cout <<"print " << *(I(a,b));
+			//I++;
+			std::cout << std::endl;}
 			break;
 
 			case 'p':
@@ -103,10 +106,23 @@ std::cout<<"operator kopiowania done" <<std::endl;
 	std::cout << "Drzewa przystaja do siebie" << std::endl;
 	else
 	std::cout << "Drzewa nie przystają do siebie" << std::endl;
+	int h = 20;
+	if(A.checkCoData(h))
+	std::cout << h <<" nalezy" << std::endl;
+	else
+	std::cout << h <<" nie nalezy" << std::endl;
 
-	for(bIterator<int> i = I.begin(); i != I.end(); i++)
+	for(h = 0; h < 60; h=h+5){
+	a = rand()%100;
+	if(A.checkCoData(a))
+	std::cout << a <<" nalezy" << std::endl;
+	else
+	std::cout << a <<" nie nalezy" << std::endl;
+}
+
+	/*for(bIterator<int> i = I.begin(); i != I.end(); i++)
 	std::cout <<"print " << i.currPtr->keys[0] << std::endl; 
-
+*/
 
 	
 

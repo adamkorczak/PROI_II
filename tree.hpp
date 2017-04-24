@@ -15,7 +15,7 @@
 template <class typ>
 class treeNode
 {
-public:
+
 
 	typ *keys;
 	int minDegree;
@@ -27,7 +27,7 @@ public:
 	treeNode **child;
 
 	typ *data;
-
+public:
 
 
 	treeNode(int _d = 1, bool _leaf = true, int _index = 1)
@@ -62,11 +62,11 @@ class bTree
 {
 	int noCells;
 	int noNodes;
+	int minDeg;
 public:
 
-template <class T> friend class bIterator;
 	treeNode<typ> *root;
-	int minDeg;
+	
 
 	//typedef bIterator<typ> bIt;
 
@@ -81,6 +81,8 @@ template <class T> friend class bIterator;
 	void insert(typ _data, typ _k);
 	void checkSize();
 
+	bool checkCoData(typ _k);
+
 	treeNode<typ>* getNodeThruTraverse(); 
 	treeNode<typ>* search(typ _k);
 	treeNode<typ>* returnEnd();	
@@ -90,24 +92,28 @@ template <class T> friend class bIterator;
 	
 	bTree<typ> operator+(const bTree<typ> &t);
 	bTree<typ> &operator=(const bTree<typ> &t);	
+
+
+template <class T> friend class bIterator;
 };
 
 template <class typ>
 class bIterator
 {
-public:
+
 	treeNode<typ> *currPtr;
 	bTree<typ> &it;
 	std::queue < treeNode<typ>* > Q;
 	
-
+public:
 	
 	bIterator(bTree<typ> &t) : it(t)
 	{ currPtr = it.root; Q.push(it.root); }
-
+	
 	bIterator & end()
 	{	
 		currPtr = NULL;
+
 		return *this;	
 	}
 	bIterator & back()
@@ -120,8 +126,42 @@ public:
 		currPtr = it.root;
 		return *this;
 	}
+	
+	int currDe()
+	{
+		return currPtr->currDeg;
+	}
+	int noNode()
+	{
+		it.checkSize();
+		return it.noNodes;
+	}
 
-	void returnQLevel();
+
+	typ *operator*()
+	{
+		return (currPtr->data);
+	}
+
+	typ *operator()(int i, int j)
+	{
+	 int k;
+	 	while(!Q.empty())
+		Q.pop();
+		Q.push(it.root);
+		begin();
+		for(k = 0; k < i; k++, ++(*this));
+		return (currPtr->data + j);
+	}
+	bIterator<typ> operator[](int i)
+	{int j;
+		while(!Q.empty())
+		Q.pop();
+		Q.push(it.root);
+		begin();
+		for( j  = 0; j < i; j++, ++(*this));
+		return *this;
+	}
 
 	bIterator<typ> &operator++();	
 	bIterator<typ> operator++(int)
@@ -139,6 +179,14 @@ public:
 		return false;
 	}
 
+	bool operator==(const bIterator &R)
+	{
+		if(*this != R)
+		return false;
+		else
+		return true;
+	}
+
 };
 
 template <class typ>
@@ -149,7 +197,6 @@ int i;
 		{
 			for(i = 0; i <= currPtr->currDeg; i++)
 			Q.push(currPtr->child[i]);
-
 			currPtr = NULL;
 			Q.pop();
 			currPtr = Q.front();
@@ -532,7 +579,6 @@ void bTree<typ>::insert(typ _data, typ _k)
 		else
 		{
 			root->insertInEmptySlots(_data, _k);
-			//std::cout<< "wstawiam do pustych" << std::endl;
 		}
 		
 	
@@ -615,6 +661,17 @@ void treeNode<typ>::split(int m, treeNode<typ> *ptr)
 	data[m] = ptr->data[minDegree - 1];
 
 	currDeg = currDeg + 1;
+}
+
+
+template <class typ>
+bool bTree<typ>::checkCoData(typ _k)
+{
+	if(root->treeNode<typ>::search(_k) != NULL)
+	return true;
+	else
+	return false;
+
 }
 
 
