@@ -97,6 +97,7 @@ public:
 template <class T> friend class bIterator;
 };
 
+
 template <class typ>
 class bIterator
 {
@@ -325,7 +326,6 @@ bool *ptr = new bool;
 	}
 	else
 	{
-//traverse thru all cells
 		(this->root)->compareTree(*s,ptr);
 		delete temp;
 
@@ -367,10 +367,7 @@ void bTree<typ>::checkSize()
 int tabSize[2];
 tabSize[0] = 0;
 tabSize[1] = 0;
-//traverse thru Tree
-//size defined as number of nodes and cells
 
-//size ++
 	if(root == NULL)
 	{
 		noNodes = 0;
@@ -386,7 +383,7 @@ tabSize[1] = 0;
 	{		
 		root->treeNode<typ>::checkSize(tabSize);	
 	}
-//std::cout << "currDeg" << root->currDeg<< std::endl;
+
 	noNodes = tabSize[0];
 	noCells = tabSize[1];
 	return;
@@ -579,12 +576,8 @@ void bTree<typ>::insert(typ _data, typ _k)
 		else
 		{
 			root->insertInEmptySlots(_data, _k);
-		}
-		
-	
+		}	
 	}
-
-
 }
 
 template <class typ>
