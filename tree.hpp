@@ -80,6 +80,7 @@ public:
 	void copyRoot(treeNode<typ> *b);
 	void insert(typ _data, typ _k);
 	void checkSize();
+	void getSize(int &t1, int &t2);
 
 	bool checkCoData(typ _k);
 
@@ -141,7 +142,7 @@ public:
 
 	typ *operator*()
 	{
-		return (currPtr->data);
+		return (currPtr->keys);
 	}
 
 	typ *operator()(int i, int j)
@@ -152,7 +153,7 @@ public:
 		Q.push(it.root);
 		begin();
 		for(k = 0; k < i; k++, ++(*this));
-		return (currPtr->data + j);
+		return (currPtr->keys+ j);
 	}
 	bIterator<typ> operator[](int i)
 	{int j;
@@ -212,7 +213,13 @@ int i;
 		}
 
 }
-
+template <class typ>
+void bTree<typ>::getSize(int &t1, int &t2)
+{
+	this->bTree<typ>::checkSize();
+	t1 = noNodes;
+	t2 = noCells;
+}
 
 template <class typ>
 treeNode<typ> *bTree<typ>::returnEnd()
@@ -564,9 +571,9 @@ void bTree<typ>::insert(typ _data, typ _k)
 				treeNode<typ> *p = new treeNode<typ>(minDeg,false,0);
 				
 				p ->child[0] = root;
-std::cout <<"error"<<std::endl;
+
 				p ->split(0, root);
-std::cout <<"1error"<<std::endl;
+
 				int i = 0;
 				if(p->keys[0] < _k)
 					i++;
@@ -623,13 +630,13 @@ void treeNode<typ>::split(int m, treeNode<typ> *ptr)
 
 	treeNode<typ> *s = new treeNode<typ>(ptr->minDegree,  ptr->leaf,0);
 	s->currDeg = (minDegree - 1);
-std::cout <<"error"<<std::endl;
+
 	for(int j = 0; j < (minDegree - 1); j++)
 	{
 		s->keys[j] = ptr->keys[j+minDegree];
 		s->data[j] = ptr->data[j+minDegree];
 	}
-std::cout <<"error1"<<std::endl;
+
 	if(ptr->leaf == false)
 	{
 		for(int j = 0; j < minDegree; j++)
@@ -637,12 +644,12 @@ std::cout <<"error1"<<std::endl;
 	}
 	
 	ptr->currDeg = (minDegree - 1);
-std::cout <<"error2"<<std::endl;
+
 	for(int j = currDeg; j >= (m + 1); j--)
 	{
 		child[j+1] = child[j];
 	}
-std::cout <<"error3"<<std::endl;
+
 	child[m+1] = s;
 
 	for(int j = (currDeg - 1); j >= m; j--)
@@ -650,10 +657,10 @@ std::cout <<"error3"<<std::endl;
 		keys[j+1] = keys[j];
 		data[j+1] = data[j];
 	}
-std::cout <<"error4"<<std::endl;
+
 	keys[m] = ptr->keys[minDegree - 1];
 	data[m] = ptr->data[minDegree - 1];
-std::cout <<"error5"<<std::endl;
+
 	currDeg = currDeg + 1;
 }
 

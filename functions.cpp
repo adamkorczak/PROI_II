@@ -322,6 +322,9 @@ return size;
 
 intSet &intSet::operator=(const intSet &t)
 {
+	/*if(*this == t)
+	return *this;*/
+
 	struct node *buff;
 	if(lastPointer != NULL)
 	{
@@ -338,7 +341,9 @@ intSet &intSet::operator=(const intSet &t)
 		
 	}	
 
-	buff = t.lastPointer ->nextPointer;
+	if(t.lastPointer != NULL)
+	{
+		buff = t.lastPointer ->nextPointer;
 
 		while(buff != t.lastPointer)
 		{
@@ -349,7 +354,11 @@ intSet &intSet::operator=(const intSet &t)
 		{
 			this->addNodeAtTheEnd(buff ->a);
 		}
-
+	}
+	else
+	{
+		this->lastPointer = NULL;
+	}
 	return *this ;
 
 }

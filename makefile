@@ -1,2 +1,2 @@
-zadaniemake: main.cpp  display.h  tree.hpp
-	g++ -o a main.cpp  -I.
+zadaniemake: test.cpp  display.h header.hpp tree.hpp
+	g++ -o a test.cpp functions.cpp -I.

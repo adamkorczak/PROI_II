@@ -37,11 +37,12 @@ int val_ref;
 		switch(in)
 		{
 			case 'b':
-			for(a = 0; a < 10; a++)
+			/*for(a = 0; a < 10; a++)
 			{
 				//B.insert(rand()%100,rand()%100);
 		
-			}			
+			}*/
+			B = A;			
 			std::cout << "Drzewo B" << std::endl;
 			printer.print(B);
 			break;
@@ -50,7 +51,7 @@ int val_ref;
 			for(a = 0; a < 10; a++)
 			{	value = rand()%3+1;
 				while(value--)
-				X.addNodeAtTheEnd(a);
+				X.addNodeAtTheEnd(rand()%20);
 				A.insert(X,X);
 				X.clear();				
 			}
@@ -58,16 +59,16 @@ int val_ref;
 			printer.print(A);
 			break;
 
-			/*case 'c':
+			case 'c':
 			//for(bIterator<int> i = I.begin(); i != I.end(); i++)
 			I.begin();
 			for(a = 0; a < I.noNode(); a++){
 			for(b = 0; b < I.currDe(); b++)
 			std::cout <<"print " << *(I(a,b));
-			//I++;
+			I++;
 			std::cout << std::endl;}
 			break;
-*/
+
 			case 'p':
 			run = true;
 			break;			
