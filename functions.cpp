@@ -436,18 +436,20 @@ intSet::intSet(const intSet &t)
 	size = 0;
 	lastPointer = NULL;	
 	struct node *buffor;
-	buffor = t.lastPointer ->nextPointer;
+	if(t.lastPointer != NULL)
+	{
+		buffor = t.lastPointer ->nextPointer;
 
-		while(buffor != t.lastPointer)
-		{
-			this->addNodeAtTheEnd(buffor ->a);
-			buffor = buffor ->nextPointer;
-		}
-		if(buffor == t.lastPointer)
-		{
-			this->addNodeAtTheEnd(buffor ->a);
-		}
-	
+			while(buffor != t.lastPointer)
+			{
+				this->addNodeAtTheEnd(buffor ->a);
+				buffor = buffor ->nextPointer;
+			}
+			if(buffor == t.lastPointer)
+			{
+				this->addNodeAtTheEnd(buffor ->a);
+			}
+	}
 }
 
 void intSet::deleteNodeWithValueInRange(int low, int high)
