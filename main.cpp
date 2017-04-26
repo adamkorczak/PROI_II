@@ -7,6 +7,7 @@
 #include <sstream>
 #include "display.h"
 #include "tree.hpp"
+#include "header.hpp"
 
 
 
@@ -15,16 +16,19 @@ int main()
 
 srand(time(NULL));
 
-bTree<int> A(3),B(3);
-bTree<int> C;
-bIterator<int> I(A);
+bTree<intSet> A(3),B(3);
+bTree<intSet> C;
+bIterator<intSet> I(A);
+intSet X;
 
-bTreePrinter<int> printer;
+bTreePrinter<intSet> printer;
 int a,b;
 bool run = false;
 char in;
 int sizeTree[2];
-
+std::string s = "a";
+int value = 2;
+int val_ref;
 
 	while(!run)
 	{
@@ -35,7 +39,7 @@ int sizeTree[2];
 			case 'b':
 			for(a = 0; a < 10; a++)
 			{
-				B.insert(rand()%100,rand()%100);
+				//B.insert(rand()%100,rand()%100);
 		
 			}			
 			std::cout << "Drzewo B" << std::endl;
@@ -43,16 +47,18 @@ int sizeTree[2];
 			break;
 
 			case 'a':
-			for(a = 0; a < 25; a++)
-			{
-				A.insert(a,a);
-		
+			for(a = 0; a < 10; a++)
+			{	value = rand()%3+1;
+				while(value--)
+				X.addNodeAtTheEnd(a);
+				A.insert(X,X);
+				X.clear();				
 			}
 			std::cout << "Drzewo A" << std::endl;
 			printer.print(A);
 			break;
 
-			case 'c':
+			/*case 'c':
 			//for(bIterator<int> i = I.begin(); i != I.end(); i++)
 			I.begin();
 			for(a = 0; a < I.noNode(); a++){
@@ -61,7 +67,7 @@ int sizeTree[2];
 			//I++;
 			std::cout << std::endl;}
 			break;
-
+*/
 			case 'p':
 			run = true;
 			break;			
@@ -106,19 +112,19 @@ std::cout<<"operator kopiowania done" <<std::endl;
 	std::cout << "Drzewa przystaja do siebie" << std::endl;
 	else
 	std::cout << "Drzewa nie przystają do siebie" << std::endl;
-	int h = 20;
+	/*std::string h = "aa";
 	if(A.checkCoData(h))
 	std::cout << h <<" nalezy" << std::endl;
 	else
-	std::cout << h <<" nie nalezy" << std::endl;
-
+	std::cout << h <<" nie nalezy" << std::endl;*/
+/*
 	for(h = 0; h < 60; h=h+5){
 	a = rand()%100;
 	if(A.checkCoData(a))
 	std::cout << a <<" nalezy" << std::endl;
 	else
 	std::cout << a <<" nie nalezy" << std::endl;
-}
+}*/
 
 	/*for(bIterator<int> i = I.begin(); i != I.end(); i++)
 	std::cout <<"print " << i.currPtr->keys[0] << std::endl; 
