@@ -23,7 +23,6 @@ class treeNode
 	int currDeg;
 	bool leaf;
 	
-	treeNode *up;
 	treeNode **child;
 
 	typ *data;
@@ -42,6 +41,7 @@ public:
 
 	treeNode *search(typ _k);
 	treeNode *traverseToEnd();
+	void remove(typ _k);
 	void traverse();
 	void traverseCopy();
 	void copy(treeNode<typ> *b);
@@ -49,7 +49,16 @@ public:
 	void split(int m, treeNode<typ> *ptr);
 	void checkSize(int tabSize[]);
 	void compareTree(treeNode<typ> &t, bool *pointer);
+	void removeFromLeaf(int i);
+	void removeFromNonLeaf(int i);
+	void merge(int i);
+	void borrowFromNext(int i);
+	void borrowFromPre(int i);
+	void fill(int i);
 
+	int getPre(int i);
+	int getSuc(int i);
+	int findKey(typ _k);
 
 template <class T> friend class bTree;
 template <class T> friend class  bTreePrinter;
@@ -81,6 +90,7 @@ public:
 	void insert(typ _data, typ _k);
 	void checkSize();
 	void getSize(int &t1, int &t2);
+	void remove(typ _k);
 
 	bool checkCoData(typ _k);
 
@@ -213,6 +223,29 @@ int i;
 		}
 
 }
+
+template <class typ>
+void bTree<typ>::remove(typ _k)
+{
+	if(!root)
+	return;
+
+	root->remove(_k);
+	
+	if(root->currDeg == 0)
+	{	
+		treeNode<typ> *temp = root;
+		if(root->leaf)
+		root = NULL;
+		else
+		root = root ->child[0];
+
+		delete temp;
+	}
+	return;
+}
+
+
 template <class typ>
 void bTree<typ>::getSize(int &t1, int &t2)
 {
@@ -550,6 +583,229 @@ bTree<typ> *temp = new bTree<typ>(t);
 	delete temp;
 	return *this;
 
+}
+
+
+template <class typ>
+int treeNode<typ>::findKey(typ _k)
+{
+int i = 0;
+	while(i < currDeg && keys[i] < _k)
+	i++;
+
+	return i;
+}
+
+
+template <class typ>
+void treeNode<typ>::remove(typ _k)
+{
+int i = findKey(_k);
+
+	if( i < currDeg && keys[i] == _k)
+	{
+		if(leaf)
+			removeFromLeaf(i);
+		else
+			removeFromNonLeaf(i);
+	}
+	else
+	{
+	
+		if(leaf)
+		return;
+
+		bool flag = ( (i == currDeg)? true : false);
+
+		if(child[i]->currDeg < minDegree)
+		fill(i);
+
+		if(flag && i >currDeg)
+		child[i-1]->remove(_k);
+		else
+		child[i]->remove(_k);
+	
+	}
+	return;
+
+}
+
+template <class typ>
+void treeNode<typ>::removeFromLeaf(int i)
+{
+	for(int j = i+1; j < currDeg; ++j)
+	keys[j-1] = keys[j];
+
+	currDeg--;
+
+	return;
+}
+
+
+template <class typ>
+void treeNode<typ>::removeFromNonLeaf(int i)
+{
+typ k = keys[i];
+
+	if(child[i]->currDeg >= minDegree)
+	{
+		int pre = getPre(i);
+		keys[i] = pre;
+		child[i]->remove(pre);
+	}
+	else if(child[i+1]->currDeg >= minDegree)
+	{
+		int suc = getSuc(i);
+		keys[i] = suc;
+		child[i+1]->remove(suc);
+	}
+	else
+	{
+		merge(i);
+		child[i]->remove(k);
+	}
+	return;
+}
+
+
+template <class typ>
+int treeNode<typ>::getPre(int i)
+{
+
+	treeNode<typ> *s = child[i+1];
+	while(!s->leaf)
+	s=s->child[s->currDeg];
+
+	return s->keys[s->currDeg - 1];
+}
+
+
+template <class typ>
+int treeNode<typ>::getSuc(int i)
+{
+	treeNode<typ> *s = child[i+1];
+	while(!s->leaf)
+	s = s->child[0];
+
+	return s->keys[0];
+}
+
+
+template <class typ>
+void treeNode<typ>::fill(int i)
+{
+	if(i != 0 && child[i-1]->currDeg >= minDegree)
+	borrowFromPre(i);
+	else if(i != currDeg && child[i+1]->currDeg >= minDegree)
+	borrowFromNext(i);
+	else
+	{
+		if( i != currDeg)
+		merge(i);
+		else
+		merge(i-1);
+	}
+	return;
+}
+
+
+template <class typ>
+void treeNode<typ>::borrowFromPre(int i)
+{
+ 
+    treeNode<typ> *c = child[i];
+    treeNode<typ> *s = child[i-1];
+
+    for (int j = c->currDeg - 1; j >= 0; --j)
+        c->keys[j + 1] = c->keys[j];
+ 
+  
+    if (!c->leaf)
+    {
+        for(int j = c->currDeg; j >= 0; --j)
+            c->child[j + 1] = c->child[j];
+    }
+
+    c->keys[0] = keys[i - 1];
+ 
+  
+    if (!leaf)
+        c->child[0] = s->child[s->currDeg];
+
+    keys[i - 1] = s->keys[s->currDeg - 1];
+ 
+    c->currDeg += 1;
+    s->currDeg -= 1;
+ 
+    return;
+}
+
+
+template <class typ>
+void treeNode<typ>::borrowFromNext(int i)
+{
+ 
+    treeNode<typ> *c = child[i];
+    treeNode<typ> *s = child[i + 1];
+ 
+    c->keys[(c->currDeg)] = keys[i];
+ 
+ 
+    if (!(c->leaf))
+        c->child[(c->currDeg)+1] = s->child[0];
+ 
+    keys[i] = s->keys[0];
+
+    for (int j=1; j < s->currDeg; ++j)
+        s->keys[j-1] = s->keys[j];
+ 
+    
+    if (!s->leaf)
+    {
+        for(int j=1; j <= s->currDeg; ++j)
+            s->child[j-1] = s->child[j];
+    }
+ 
+   
+    c->currDeg += 1;
+    s->currDeg -= 1;
+ 
+    return;
+}
+
+
+template <class typ>
+void treeNode<typ>::merge(int i)
+{
+    treeNode<typ> *c= child[i];
+    treeNode<typ> *s = child[i + 1];
+
+    c->keys[minDegree - 1] = keys[i];
+ 
+
+    for (int j = 0; j < s->currDeg; ++j)
+        c->keys[j + minDegree] = s->keys[j];
+ 
+
+    if (!c->leaf)
+    {
+        for(int j = 0; j <= s->currDeg; ++j)
+            c->child[j + minDegree] = s->child[i];
+    }
+ 
+    for (int j = i + 1; j < currDeg; ++j)
+        keys[j-1] = keys[j];
+ 
+
+    for (int j = i + 2; i <= currDeg; ++j)
+         child[j-1] = child[j];
+ 
+    c->currDeg += s->currDeg + 1;
+
+    currDeg--;
+
+    delete(s);
+    return;
 }
 
 

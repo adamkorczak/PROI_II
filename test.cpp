@@ -1,4 +1,4 @@
-#include <iostream>
+	#include <iostream>
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,7 +24,7 @@ bIterator<type> I(A);
 
 //Dodanie losowych wartosci do drzewa//
 	std::cout << "Dodanie losowych elementów do drzewa A" << std::endl;
-	for(i = 0; i < NO_ELEMENTS; i++)
+	for(i = 0; i < NO_ELEMENTS/2; i++)
 	A.insert(wsk[i], wsk[i]);
 	std::cout << "Wygenerowane drzewo A" << std::endl;
 	printer.print(A);
@@ -111,6 +111,11 @@ bTree<type> B(3);
 				In++;
 				std::cout << std::endl << std::endl;
 			}
+	int r;
+	std::cout << "Wybierz wartosc komorki do usuniecia" << std::endl;
+	std::cin >> r;
+	A.remove(r);
+	printer.print(A);
 
 }
 
@@ -120,7 +125,7 @@ void generateRandomInt(int *wsk, int size)
 int j;
 	for(j =0; j<size; j++)
 	{
-		*(wsk+j) = rand()%50;
+		*(wsk+j) = j;
 	}
 }
 
@@ -171,8 +176,8 @@ intSet *intSetTab = new intSet[NO_ELEMENTS];
 	generateRandomInt(intTab, NO_ELEMENTS);
 	
 	test(intTab);
-	test(stringTab);
-	test(intSetTab);
+	//test(stringTab);
+	//test(intSetTab);
 
 	
 };
